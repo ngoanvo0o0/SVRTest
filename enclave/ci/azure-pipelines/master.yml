@@ -1,0 +1,68 @@
+#
+# Azure Pipeline to build & test the backup enclave. Triggers on commits and PRs to master in enclave/.
+#
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - enclave/
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - enclave/
+
+schedules:
+  - cron: "00 14 * * *"
+    displayName: "Daily test run"
+    branches:
+      include:
+      - master
+    always: true
+
+resources:
+  containers:
+  - container: kbupd-enclave-builder
+    image:     signalbackupci:kbupd-enclave-builder
+    endpoint:  signalbackupci-container-registry
+    options:   --user 0:0
+
+stages:
+- stage: docker_build_kbupd_enclave_builder
+  displayName: docker build kbupd-enclave-builder
+  jobs:
+  - template: jobs/docker_build_kbupd_enclave_builder.yml
+
+- stage: make_test
+  displayName: make test
+  dependsOn: docker_build_kbupd_enclave_builder
+  jobs:
+  - template: jobs/make_test.yml
+
+- stage: make_llvm_bolt
+  displayName: make llvm-bolt
+  dependsOn: docker_build_kbupd_enclave_builder
+  jobs:
+  - template: jobs/make_llvm_bolt.yml
+
+- stage: make_all_insecure
+  displayName: make all FEATURES=insecure
+  dependsOn:
+    - docker_build_kbupd_enclave_builder
+    - make_llvm_bolt
+  jobs:
+  - template: jobs/make_all_insecure.yml
+
+- stage: make_all
+  displayName: make all
+  dependsOn:
+    - docker_build_kbupd_enclave_builder
+    - make_llvm_bolt
+  jobs:
+  - template: jobs/make_all.yml

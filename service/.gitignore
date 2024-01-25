@@ -1,0 +1,9 @@
+/build
+/config/*.production.yml
+/config/*.production.pem
+/config/*.staging.yml
+/config/*.staging.pem
+/config/*.testing.yml
+/config/*.testing.pem
+/config/frontend.staging*.yml
+/config/frontend.production*.yml

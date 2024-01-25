@@ -1,0 +1,26 @@
+[package]
+authors     = ["Open Whisper Systems"]
+name        = "kbupd_config"
+version     = "0.1.0"
+license     = "AGPL-3.0-or-later"
+description = "Key Backup Service Daemon Config"
+edition     = "2018"
+
+[features]
+default = ["clap"]
+
+[dependencies]
+anyhow       = "1.0"
+clap         = { version = "2.33", optional = true }
+env_logger   = "0.7"
+kbupd_util   = { git = "https://github.com/signalapp/sgx_common.git", rev = "580489343a37517d96451a5c0950d462d3e86a3b" }
+log          = { version = "0.4", features = ["std"] }
+serde        = "1.0"
+serde_derive = "1.0"
+serde_yaml   = "0.8"
+thiserror    = "1.0"
+
+[[bin]]
+name = "kbupd-config"
+path = "src/main.rs"
+required-features = ["clap"]

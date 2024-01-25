@@ -1,0 +1,45 @@
+#
+# Azure Pipelines job to build the enclave from within in the kbupd-enclave-builder docker image.
+#
+
+jobs:
+- job: make_all
+  displayName: make all
+  pool:
+    vmImage: ubuntu-18.04
+  container: kbupd-enclave-builder
+  workspace:
+    clean: all
+  steps:
+  - script: |
+      cp -a enclave /home/rust/src && \
+      mkdir enclave/build/ && \
+      ln -s `pwd`/enclave/build /home/rust/src/build
+    displayName: set up build directory
+
+  - download: current
+    artifact: llvm-bolt
+  - script: install -D -m 755 $(Pipeline.Workspace)/llvm-bolt/llvm-bolt enclave/build/bin/llvm-bolt
+
+  - script: make -C /home/rust/src/ bindgen
+    displayName: make bindgen
+
+  - script: make -C /home/rust/src/ debuild
+    displayName: make debuild
+
+  - publish:  enclave/build/libkbupd_enclave.unstripped.so
+    artifact: libkbupd_enclave.unstripped.so
+  - publish:  enclave/build/libkbupd_enclave.hardened.unstripped.so
+    artifact: libkbupd_enclave.hardened.unstripped.so
+  - publish:  enclave/build/libkbupd_enclave.hardened.unsigned.so
+    artifact: libkbupd_enclave.hardened.unsigned.so
+  - publish:  enclave/build/libkbupd_enclave.hardened.signdata
+    artifact: libkbupd_enclave.hardened.signdata
+  - publish:  enclave/build/libkbupd_enclave.hardened.mrenclave
+    artifact: libkbupd_enclave.hardened.mrenclave
+
+  - script: make -C /home/rust/src/ tar
+    displayName: make tar
+
+  - publish:  enclave/build/libkbupd_enclave.hardened.build.tar.bz2
+    artifact: libkbupd_enclave.hardened.build.tar.bz2

@@ -1,0 +1,9 @@
+[workspace]
+members = ["kbupd_enclave", "sgx_ffi", "sgxsd_ffi", "test_ffi"]
+exclude = ["build"]
+
+[patch.crates-io]
+ring = { path = "build/rust_deps/ring-323204d618ea9d339e40b7bf6f0517051a44e28a" }
+
+[profile.release]
+lto = "fat"

@@ -1,0 +1,44 @@
+[package]
+authors = ["Open Whisper Systems"]
+name    = "kbupd_enclave"
+version = "0.1.0"
+license = "AGPL-3.0-or-later"
+edition = "2018"
+
+[features]
+default  = []
+insecure = []
+debug    = ["insecure"]
+trace    = ["debug", "insecure"]
+test     = ["sgx_ffi/test", "sgxsd_ffi/test"]
+
+[dependencies]
+base64                = { version = "0.11", default-features = false, features = ["alloc"] }
+bytes                 = { version = "0.5", default-features = false, features = [] }
+chrono                = { version = "0.4", default-features = false, features = [] }
+hashbrown             = { version = "0.6", default-features = false, features = [] }
+intrusive-collections = "0.8.5"
+lazy_static           = { version = "1.4", features = ["spin_no_std"] }
+libc                  = { version = "0.2", default-features = false, features = [] }
+no-std-compat         = { version = "0.2", features = ["alloc"] }
+num-traits            = { version = "0.2", default-features = false, features = [] }
+prost                 = { path = "../build/rust_deps/prost-9c5d46e72acc07a9c4305ffba79d253e0f603a27", default-features = false, features = ["prost-derive"] }
+rand_core             = { version = "0.5", default-features = false, features = [] }
+serde                 = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+serde_json            = { path = "../build/rust_deps/serde_json-d79b0c67f62e168d4872bb8694377ffd97b8949f", default-features = false, features = [] }
+sgx_ffi               = { path = "../sgx_ffi" }
+sgxsd_ffi             = { path = "../sgxsd_ffi" }
+spin                  = "0.5"
+snow                  = { path = "../build/rust_deps/snow-d8d00a37c8e39b2557d23a26cc4f722595b4f2d9", default-features = false, features = [] }
+webpki                = { path = "../build/rust_deps/webpki-3c92126b95c6ffbe20f3c8f420f4e4fe804954bd", default-features = false, features = [] }
+
+[dev-dependencies]
+lazy_static    = "1.4"
+mockers        = "0.21"
+mockers_derive = "0.21"
+rand           = { version = "0.7", default-features = false, features = [] }
+rand_chacha    = { version = "0.2", default-features = false, features = [] }
+test_ffi       = { path = "../test_ffi" }
+
+[lib]
+crate-type = ["staticlib"]
